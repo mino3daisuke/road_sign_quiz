@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:road_sign_quiz/app_settings.dart';
 import 'package:road_sign_quiz/judge_result_text.dart';
+import 'package:road_sign_quiz/start_page.dart';
 
 import 'choice_button.dart';
 
@@ -23,15 +24,28 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
+      initialRoute: '/',
+      routes: {
+        '/': (BuildContext context) => StartPage(),
+        '/play': (BuildContext context) => RoadSignPage(),
+      },
+//      home: StartPage(),
+    );
+  }
+}
+
+class RoadSignPage extends StatelessWidget {
+  const RoadSignPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
         appBar: AppBar(
           title: Text('Road Sign Quiz'),
         ),
         body: SafeArea(
           child: RoadSignQuiz(),
-        ),
-      ),
-    );
+        ));
   }
 }
 
@@ -42,7 +56,6 @@ class RoadSignQuiz extends StatefulWidget {
 
 class _RoadSignQuizState extends State<RoadSignQuiz> {
   static const int choicesNumber = 4;
-  bool isPlaying = false;
   JudgeResult judgeResult = JudgeResult.none;
   List<String> keys = AppSettings.roadSignList.keys.toList();
   String question = ''; //問題
@@ -54,103 +67,89 @@ class _RoadSignQuizState extends State<RoadSignQuiz> {
   @override
   void initState() {
     super.initState();
+    nextQuestion();
+    selectChoices(question);
+    judgeResult = JudgeResult.none;
+    isSelectedList = [false, false, false, false];
+    canAnswer = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return isPlaying
-        ? Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
-            child: Stack(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child:
-                          SvgPicture.asset(AppSettings.roadSignList[question]!),
-                    ),
-                    Center(child: JudgeResultText(judgeResult)),
-                    ChoiceButton(
-                      label: choices[0],
-                      onPressed: () {
-                        onAnswered(0);
-                      },
-                      canAnswer: canAnswer,
-                      isSelected: isSelectedList[0],
-                      isCorrect: question == choices[0],
-                    ),
-                    ChoiceButton(
-                      label: choices[1],
-                      onPressed: () {
-                        onAnswered(1);
-                      },
-                      canAnswer: canAnswer,
-                      isSelected: isSelectedList[1],
-                      isCorrect: question == choices[1],
-                    ),
-                    ChoiceButton(
-                      label: choices[2],
-                      onPressed: () {
-                        onAnswered(2);
-                      },
-                      canAnswer: canAnswer,
-                      isSelected: isSelectedList[2],
-                      isCorrect: question == choices[2],
-                    ),
-                    ChoiceButton(
-                      label: choices[3],
-                      onPressed: () {
-                        onAnswered(3);
-                      },
-                      canAnswer: canAnswer,
-                      isSelected: isSelectedList[3],
-                      isCorrect: question == choices[3],
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      child: Text('やめる'),
-                      onPressed: () {
-                        setState(() {
-                          isPlaying = false;
-                        });
-                      },
-                    ),
-                    ElevatedButton(
-                      child: Text('次へ'),
-                      onPressed: () {
-                        nextButton();
-                        //変更箇所
-                        autoNextQuestion.cancel();
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          )
-        : Center(
-            //はじめる画面
-            child: ElevatedButton(
-              child: Text('はじめる!'),
-              onPressed: () {
-                setState(() {
-                  isPlaying = true;
-                  nextQuestion();
-                  selectChoices(question);
-                  judgeResult = JudgeResult.none;
-                  isSelectedList = [false, false, false, false];
-                  canAnswer = true;
-                });
-              },
-            ),
-          );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+      child: Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: SvgPicture.asset(AppSettings.roadSignList[question]!),
+              ),
+              Center(child: JudgeResultText(judgeResult)),
+              ChoiceButton(
+                label: choices[0],
+                onPressed: () {
+                  onAnswered(0);
+                },
+                canAnswer: canAnswer,
+                isSelected: isSelectedList[0],
+                isCorrect: question == choices[0],
+              ),
+              ChoiceButton(
+                label: choices[1],
+                onPressed: () {
+                  onAnswered(1);
+                },
+                canAnswer: canAnswer,
+                isSelected: isSelectedList[1],
+                isCorrect: question == choices[1],
+              ),
+              ChoiceButton(
+                label: choices[2],
+                onPressed: () {
+                  onAnswered(2);
+                },
+                canAnswer: canAnswer,
+                isSelected: isSelectedList[2],
+                isCorrect: question == choices[2],
+              ),
+              ChoiceButton(
+                label: choices[3],
+                onPressed: () {
+                  onAnswered(3);
+                },
+                canAnswer: canAnswer,
+                isSelected: isSelectedList[3],
+                isCorrect: question == choices[3],
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                child: Text('やめる'),
+                onPressed: () {
+                  setState(() {
+                    autoNextQuestion.cancel();
+                    Navigator.of(context).pop();
+                  });
+                },
+              ),
+              ElevatedButton(
+                child: Text('次へ'),
+                onPressed: () {
+                  nextButton();
+                  autoNextQuestion.cancel();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   //次へボタンの処理

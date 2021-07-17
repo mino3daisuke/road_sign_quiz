@@ -14,8 +14,8 @@ class JudgeResultText extends StatelessWidget {
     );
   }
 
-  String judgeText(JudgeResult judgeResult){
-    switch(judgeResult){
+  String judgeText(JudgeResult judgeResult) {
+    switch (judgeResult) {
       case JudgeResult.none:
         return '道路標識クイズ！';
       case JudgeResult.incorrect:
@@ -25,4 +25,3 @@ class JudgeResultText extends StatelessWidget {
     }
   }
 }
-
