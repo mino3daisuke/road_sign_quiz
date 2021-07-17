@@ -23,7 +23,6 @@ class JudgeResultText extends StatelessWidget {
       case JudgeResult.correct:
         return '正解！';
     }
-    return '';
   }
 }
 
