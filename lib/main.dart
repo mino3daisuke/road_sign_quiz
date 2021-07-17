@@ -3,8 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:road_sign_quiz/app_settings.dart';
 import 'package:road_sign_quiz/judge_result_text.dart';
+import 'package:road_sign_quiz/road_sign_quiz_model.dart';
 import 'package:road_sign_quiz/start_page.dart';
 
 import 'choice_button.dart';
@@ -17,19 +19,22 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '道路標識クイズ',
-      theme: ThemeData(
-        //テーマ（色とか指定できる
+    return ChangeNotifierProvider(
+      create: (context) => RoadSignQuizModel(),
+      child: MaterialApp(
+        title: '道路標識クイズ',
+        theme: ThemeData(
+          //テーマ（色とか指定できる
 
-        primarySwatch: Colors.blue,
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (BuildContext context) => StartPage(),
-        '/play': (BuildContext context) => RoadSignPage(),
-      },
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (BuildContext context) => StartPage(),
+          '/play': (BuildContext context) => RoadSignPage(),
+        },
 //      home: StartPage(),
+      ),
     );
   }
 }
@@ -62,7 +67,7 @@ class _RoadSignQuizState extends State<RoadSignQuiz> {
   List<String> choices = []; //選択肢
   List<bool> isSelectedList = [false, false, false, false];
   bool canAnswer = true;
-  late Timer autoNextQuestion;
+  Timer? autoNextQuestion;
 
   @override
   void initState() {
@@ -132,17 +137,15 @@ class _RoadSignQuizState extends State<RoadSignQuiz> {
               ElevatedButton(
                 child: Text('やめる'),
                 onPressed: () {
-                  setState(() {
-                    autoNextQuestion.cancel();
-                    Navigator.of(context).pop();
-                  });
+                  autoNextQuestion?.cancel();
+                  Navigator.of(context).pop();
                 },
               ),
               ElevatedButton(
                 child: Text('次へ'),
                 onPressed: () {
                   nextButton();
-                  autoNextQuestion.cancel();
+                  autoNextQuestion?.cancel();
                 },
               ),
             ],
@@ -175,9 +178,11 @@ class _RoadSignQuizState extends State<RoadSignQuiz> {
 
   //正解不正解の文字表示
   void judge(String text, String answer) {
-    if (text == answer)
+    Provider.of<RoadSignQuizModel>(context, listen: false).addTotalNumber();
+    if (text == answer) {
       judgeResult = JudgeResult.correct;
-    else
+      Provider.of<RoadSignQuizModel>(context, listen: false).addCorrectNumber();
+    } else
       judgeResult = JudgeResult.incorrect;
   }
 
