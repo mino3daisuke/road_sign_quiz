@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:road_sign_quiz/print_correct_number.dart';
 import 'package:road_sign_quiz/road_sign_quiz_model.dart';
 
 class StartPage extends StatelessWidget {
@@ -25,14 +26,7 @@ class StartPage extends StatelessWidget {
                   Navigator.of(context).pushNamed('/play');
                 },
               ),
-              Consumer<RoadSignQuizModel>(
-                builder: (context, roadSignQuizModel, child) {
-                  return Text(
-                    "問題数: ${roadSignQuizModel.totalNumber}  正解数: ${roadSignQuizModel.correctNumber}",
-                    style: TextStyle(fontSize: 36.0),
-                  );
-                },
-              ),
+              PrintCorrectNumber(),
             ],
           ),
         ),
