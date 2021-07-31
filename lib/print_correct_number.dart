@@ -10,27 +10,27 @@ class PrintCorrectNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<RoadSignQuizModel>(
-        builder: (context, roadSignQuizModel, child) {
-      return Column(
-        children: [
-          Text(
-            "問題数: ${roadSignQuizModel.totalNumber}  正解数: ${roadSignQuizModel.correctNumber}",
-            style: TextStyle(fontSize: 36.0),
-          ),
-          printCorrectRatio(roadSignQuizModel),
-        ],
-      );
-    });
+    return Column(
+      children: [
+        Text(
+          "問題数: ${Provider.of<RoadSignQuizState>(context, listen: true).quizTotalNumber}  "
+          "正解数: ${Provider.of<RoadSignQuizState>(context, listen: true).quizCorrectNumber}",
+          style: TextStyle(fontSize: 36.0),
+        ),
+        printCorrectRatio(
+            context, Provider.of<RoadSignQuizState>(context, listen: false)),
+      ],
+    );
   }
 
-  Text printCorrectRatio(RoadSignQuizModel roadSignQuizModel) {
-    if (roadSignQuizModel.totalNumber == 0)
+  Text printCorrectRatio(
+      BuildContext context, RoadSignQuizState roadSignQuizState) {
+    if (roadSignQuizState.quizTotalNumber == 0)
       return Text(
         "正答率: ---",
         style: TextStyle(fontSize: 36.0),
       );
-    else if (roadSignQuizModel.correctNumber == 0)
+    else if (roadSignQuizState.quizCorrectNumber == 0)
       return Text(
         "正答率: 0%",
         style: TextStyle(fontSize: 36.0),
@@ -38,7 +38,7 @@ class PrintCorrectNumber extends StatelessWidget {
     else {
       final formatter = NumberFormat("###.0");
       return Text(
-        "正答率: ${formatter.format(roadSignQuizModel.correctRatio)}%",
+        "正答率: ${formatter.format(Provider.of<RoadSignQuizController>(context, listen: true).calcCorrectRatio())}%",
         style: TextStyle(fontSize: 36.0),
       );
     }

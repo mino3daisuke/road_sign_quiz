@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:road_sign_quiz/app_settings.dart';
@@ -16,11 +17,10 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => RoadSignQuizModel(),
+    return StateNotifierProvider<RoadSignQuizController, RoadSignQuizState>(
+      create: (context) => RoadSignQuizController(),
       child: MaterialApp(
         title: '道路標識クイズ',
         theme: ThemeData(
@@ -33,7 +33,6 @@ class MyApp extends StatelessWidget {
           '/': (BuildContext context) => StartPage(),
           '/play': (BuildContext context) => RoadSignPage(),
         },
-//      home: StartPage(),
       ),
     );
   }
@@ -178,10 +177,12 @@ class _RoadSignQuizState extends State<RoadSignQuiz> {
 
   //正解不正解の文字表示
   void judge(String text, String answer) {
-    Provider.of<RoadSignQuizModel>(context, listen: false).addTotalNumber();
+    Provider.of<RoadSignQuizController>(context, listen: false)
+        .addTotalNumber();
     if (text == answer) {
       judgeResult = JudgeResult.correct;
-      Provider.of<RoadSignQuizModel>(context, listen: false).addCorrectNumber();
+      Provider.of<RoadSignQuizController>(context, listen: false)
+          .addCorrectNumber();
     } else
       judgeResult = JudgeResult.incorrect;
   }

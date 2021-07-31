@@ -1,26 +1,34 @@
-import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:state_notifier/state_notifier.dart';
 
-class RoadSignQuizModel extends ChangeNotifier {
-  int _quizTotalNumber = 0;
-  int _quizCorrectNumber = 0;
+part 'road_sign_quiz_model.freezed.dart';
 
-  int get totalNumber => _quizTotalNumber;
-  int get correctNumber => _quizCorrectNumber;
-  double get correctRatio => (_quizCorrectNumber / _quizTotalNumber) * 100;
+@freezed
+class RoadSignQuizState with _$RoadSignQuizState {
+  const factory RoadSignQuizState({
+    int? quizTotalNumber,
+    int? quizCorrectNumber,
+  }) = _RoadSignQuizState;
+}
+
+class RoadSignQuizController extends StateNotifier<RoadSignQuizState> {
+  RoadSignQuizController()
+      : super(RoadSignQuizState(quizTotalNumber: 0, quizCorrectNumber: 0));
 
   void addTotalNumber() {
-    _quizTotalNumber++;
-    notifyListeners();
+    state = state.copyWith(quizTotalNumber: state.quizTotalNumber! + 1);
   }
 
   void addCorrectNumber() {
-    _quizCorrectNumber++;
-    notifyListeners();
+    state = state.copyWith(quizCorrectNumber: state.quizCorrectNumber! + 1);
   }
 
   void resetAll() {
-    _quizTotalNumber = 0;
-    _quizCorrectNumber = 0;
-    notifyListeners();
+    state = state.copyWith(quizTotalNumber: 0);
+    state = state.copyWith(quizCorrectNumber: 0);
+  }
+
+  double? calcCorrectRatio() {
+    return state.quizCorrectNumber! / state.quizTotalNumber! * 100;
   }
 }

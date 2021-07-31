@@ -21,7 +21,7 @@ class StartPage extends StatelessWidget {
               ElevatedButton(
                 child: Text('はじめる!'),
                 onPressed: () {
-                  Provider.of<RoadSignQuizModel>(context, listen: false)
+                  Provider.of<RoadSignQuizController>(context, listen: false)
                       .resetAll();
                   Navigator.of(context).pushNamed('/play');
                 },
